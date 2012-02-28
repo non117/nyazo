@@ -1,0 +1,22 @@
+$(function(){
+    $.autopager({
+        content:".body",
+        link:".next",
+        load:function(){
+            $(this[0].getElementsByTagName("a")).fancybox();
+            $(this[0].getElementsByTagName("img")).MyThumbnail({
+                thumbWidth:150,
+                thumbHeight:150,
+                backgroundColor:"#ccc",
+                imageDivClass:"image"
+            });
+        }
+    });
+    $(".body img").MyThumbnail({
+        thumbWidth:150,
+        thumbHeight:150,
+        backgroundColor:"#ccc",
+        imageDivClass:"image"
+    });
+    $(".popup").fancybox();
+});

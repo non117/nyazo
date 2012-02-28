@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{# <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> #}
+
+{% block extrahead %}
+<style type="text/css">
+#upload{
+    
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+{# upload popupのアレ #}
+<div style="display:none;">
+    <div id="upload">
+        <form method="POST" enctype="multipart/form-data" id="form_input">
+            <input type="file" name="imagedata" multiple/><br/><br/>
+            <input type="submit" value="送信" id="upload_submit"/>
+            {% csrf_token %}
+        </form>
+    </div>
+</div>
+
+<div id="content">
+    <div id="header">
+        <a href="{% url index %}">index</a>
+        <a href="{% url admin %}">admin</a>
+        <a href="#upload" class="popup">upload</a>
+        <a href="{% url logout %}">logout</a>
+    </div>
+    <div class="body">
+    {% for contact in contacts.object_list %}
+        <a class="popup" href="/{{ contact.filename }}" rel="image" title="{% for tag in contact.tag.all %}{{ tag.name }}{% endfor %}">
+            <img src="/{{ contact.filename }}"/>
+        </a>
+    {% endfor %}
+    </div>
+</div>
+<link class="next" href="/admin?page={{ nextpage }}" />
+{% endblock %}
