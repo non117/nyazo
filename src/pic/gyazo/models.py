@@ -10,9 +10,8 @@ class Image(models.Model):
     def __unicode(self):
         return self.filename
     filename = models.CharField(u"ファイル名", max_length=200)
-    permlink = models.CharField(u"パーマリンク", max_length=200)
-    description = models.CharField(u"詳細", max_length=200)
     tag = models.ManyToManyField(Tag)
-    created = models.DateTimeField(u"作成日", auto_now_add=True)
-    protected = models.BooleanField(u"非公開", default=False)
+    description = models.CharField(u"詳細", max_length=200)
+    permlink = models.CharField(u"パーマリンク", max_length=200)
     meta = models.CharField(u"メタ情報", max_length=1000)
+    created = models.DateTimeField(u"作成日", auto_now_add=True)

@@ -37,8 +37,20 @@ def index(request):
 
 @login_required
 def admin(request):
+    all_tags = Tag.objects.all().values_list("name", flat=True)
     if request.method == "POST":
-        upload(request)
+        image_list = request.FILES.getlist("imagedata")
+        tags = filter(lambda s:s!="", request.POST["tags"].split(","))
+        new_tags = list(set(tags) - (set(tags) & set(all_tags)))
+        for tag_name in new_tags:
+            Tag.objects.create(name=tag_name)
+        tags = Tag.objects.filter(name__in=tags)
+        description = request.POST["description"]
+        for image in image_list:
+            image_type = image.name.split(".")[-1]
+            image_name = "%s.%s" % (gen_next_name(), image_type)
+            image_data = image.read()
+            save_image(image_name, image_data, tags, description or image.name)
         return HttpResponseRedirect(reverse("admin"))
     else:
         image_list = Image.objects.all().order_by("-created")
@@ -50,7 +62,10 @@ def admin(request):
         except EmptyPage:
             contacts = paginator.page(paginator.num_pages)
             nextpage = ""
-        return direct_to_template(request, "admin.html", {"contacts":contacts, "nextpage":nextpage})
+        return direct_to_template(request, "admin.html", {"contacts":contacts,
+                                                          "nextpage":nextpage,
+                                                          "tags":all_tags
+                                                          })
 
 def logout(request):
     auth_logout(request)
@@ -96,29 +111,34 @@ def gyazo(request):
         image_data = request.FILES["imagedata"].read()
         # 画像データとソルトでsha1ハッシュ値を計算
         server_hash = hashlib.sha1(image_data+SALT).hexdigest()
+        tag,_ = Tag.objects.get_or_create(name="Gyazo")
         if hash == server_hash:
-            url = save_image(image_name, image_data, "Gyazo")
+            url = save_image(image_name, image_data, [tag])
             return HttpResponse(url)
     return HttpResponse("")
-
-def upload(request):
-    tag = request.POST.get("tag", "web")
-    image_list = request.FILES.getlist("imagedata")
-    for image in image_list:
-        image_type = image.name.split(".")[-1]
-        image_name = "%s.%s" % (gen_next_name(), image_type)
-        image_data = image.read()
-        save_image(image_name, image_data, tag)
     
-def save_image(image_name, image_data, tag):
+def save_image(image_name, image_data, tags, description="", permlink="", meta=""):
     image_path = os.path.join(IMG_DIR, image_name)
     image_url = os.path.join(IMG_URL, image_name)
     with open(image_path, 'w') as f:
         f.write(image_data)
     # DBに保存
-    tag,_ = Tag.objects.get_or_create(name=tag)
-    image_obj = Image(filename=image_name)
+    image_obj = Image(filename=image_name, description=description,
+                      permlink=permlink, meta=meta)
     image_obj.save()
-    image_obj.tag = [tag]
+    image_obj.tag = tags
     image_obj.save()
     return image_url
+
+@login_required
+def delete(request):
+    if request.GET.get("name"):
+        name = request.GET["name"].split("/")[-1]
+        try:
+            image = Image.objects.get(filename=name)
+        except ObjectDoesNotExist:
+            return HttpResponse()
+        image.delete()
+        image_path = os.path.join(IMG_DIR, name)
+        os.remove(image_path)
+    return HttpResponse()
