@@ -1,4 +1,5 @@
 $(function(){
+    $(".next").attr("href", document.location.href + "&page=" + $(".next").attr("next"));
     $.autopager({
         content:".body",
         link:".next",
@@ -35,8 +36,21 @@ $(function(){
     
     $(".tags").tokenField({regex:/.+/i});
     
-    $(".alltag li").click(function(){
+    $("#upload .alltag li").click(function(){
         $(".token-input input").attr("value",$(this).text());
         $(".token-input input").blur();
     });
+    
+    $("#header .alltag li").click(function(){
+        if($(this).hasClass("search")){
+            $(this).attr("style","background-color:#ECEEF5;");
+            $(this).removeClass("search");
+            $("#search_tag").val($("#search_tag").val().replace("," + $(this).attr("tag"),""));
+        }else{
+            $(this).attr("style","background-color:#CAD4E7;");
+            $(this).addClass("search");
+            $("#search_tag").val($("#search_tag").val() + "," + $(this).attr("tag"));
+        }
+    });
 });
+

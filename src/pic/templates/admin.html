@@ -65,14 +65,20 @@ input[type=text]{
         <a href="{% url admin %}">admin</a>
         <a href="#upload" class="popup">upload</a>
         <a href="{% url logout %}">logout</a>
+        <ul class="alltag">{% for tag in tags %}<li tag="{{ tag }}">{{ tag }}</li>{% endfor %}</ul>
+        <form method="GET">
+        <input type="hidden" name="tags" id="search_tag" />
+        キーワード検索 : <input type="text" id="keyword" name="keyword"/> <input type="submit" id="search" value="検索"/>
+        </form>
     </div>
     <div class="body">
-    {% for contact in contacts.object_list %}
-        <a class="popup" href="/{{ contact.filename }}" rel="image" title="{% for tag in contact.tag.all %}{{ tag.name }} {% endfor %}">
-            <img src="/{{ contact.filename }}"/>
+    {% for image in contacts.object_list %}
+        <a class="popup" href="/{{ image.filename }}" rel="image" 
+        title="{% for tag in image.tag.all %}{{ tag.name }}&nbsp;&nbsp;{% endfor %}&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;{{ image.description }}">
+            <img src="/{{ image.filename }}"/>
         </a>
     {% endfor %}
     </div>
 </div>
-<link class="next" href="/admin?page={{ nextpage }}" />
+<link class="next" next="{{ nextpage }}" />
 {% endblock %}

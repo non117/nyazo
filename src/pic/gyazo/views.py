@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import hashlib
 import os
+import urllib2
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -53,7 +54,13 @@ def admin(request):
             save_image(image_name, image_data, tags, description or image.name)
         return HttpResponseRedirect(reverse("admin"))
     else:
-        image_list = Image.objects.all().order_by("-created")
+        keyword = request.GET.get("keyword","")
+        if request.GET.get("tags"):
+            tags = Tag.objects.filter(name__in=filter(lambda s:s!="",request.GET["tags"].split(",")))
+            image_list = Image.objects.filter(description__contains=keyword, tag__in=tags).order_by("-created").distinct()
+        else:
+            image_list = Image.objects.filter(description__contains=keyword).order_by("-created").distinct()
+        
         paginator = Paginator(image_list, 35)
         page = request.GET.get('page', '1')
         try:
@@ -101,6 +108,23 @@ def gen_next_name():
     return prev_name
 
 @csrf_exempt
+def urlpost(request):
+    if request.method == "POST":
+        url = request.POST.get("url", "")
+        hash = request.POST.get("hash", "")
+        server_hash = hashlib.sha1(url+SALT).hexdigest()
+        if hash == server_hash:
+            image_type = url.split(".")[-1]
+            image_name = "%s.%s" % (gen_next_name(), image_type)
+            req = urllib2.Request(url)
+            if "pixiv.net" in url:
+                req.add_header("Referer","http://www.pixiv.net")
+            image_data = urllib2.urlopen(req).read()
+            tag,_ = Tag.objects.get_or_create(name="hoge")
+            save_image(image_name, image_data, [tag], url)
+        return HttpResponse()
+
+@csrf_exempt
 def gyazo(request):
     if request.method == "POST":
         hash = request.POST.get("hash", "")
@@ -115,7 +139,7 @@ def gyazo(request):
         if hash == server_hash:
             url = save_image(image_name, image_data, [tag])
             return HttpResponse(url)
-    return HttpResponse("")
+    return HttpResponse()
     
 def save_image(image_name, image_data, tags, description="", permlink="", meta=""):
     image_path = os.path.join(IMG_DIR, image_name)
