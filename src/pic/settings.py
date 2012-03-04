@@ -2,7 +2,7 @@
 import os
 
 IMG_DIR = "%s/images" % os.path.dirname(os.path.abspath(__file__))
-IMG_URL = "http://localhost:8000/"
+HOST = "http://localhost:8000/"
 SALT = "hoge"
 
 DEBUG = True

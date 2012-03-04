@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.simple import direct_to_template
 
 from pic.gyazo.models import Image, Tag
-from pic.settings import IMG_DIR, IMG_URL, SALT
+from pic.settings import IMG_DIR, HOST, SALT
 
 
 try:
@@ -112,6 +112,7 @@ def urlpost(request):
     if request.method == "POST":
         url = request.POST.get("url", "")
         hash = request.POST.get("hash", "")
+        tag = request.POST.get("tag", "web")
         server_hash = hashlib.sha1(url+SALT).hexdigest()
         if hash == server_hash:
             image_type = url.split(".")[-1]
@@ -120,7 +121,7 @@ def urlpost(request):
             if "pixiv.net" in url:
                 req.add_header("Referer","http://www.pixiv.net")
             image_data = urllib2.urlopen(req).read()
-            tag,_ = Tag.objects.get_or_create(name="hoge")
+            tag,_ = Tag.objects.get_or_create(name=tag)
             save_image(image_name, image_data, [tag], url)
         return HttpResponse()
 
@@ -143,7 +144,7 @@ def gyazo(request):
     
 def save_image(image_name, image_data, tags, description="", permlink="", meta=""):
     image_path = os.path.join(IMG_DIR, image_name)
-    image_url = os.path.join(IMG_URL, image_name)
+    image_url = os.path.join(HOST, image_name)
     with open(image_path, 'w') as f:
         f.write(image_data)
     # DBに保存
