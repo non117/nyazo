@@ -69,16 +69,17 @@ input[type=text]{
         <form method="GET">
         <input type="hidden" name="tags" id="search_tag" />
         キーワード検索 : <input type="text" id="keyword" name="keyword"/> <input type="submit" id="search" value="検索"/>
+        {{ number }}
         </form>
     </div>
     <div class="body">
     {% for image in contacts.object_list %}
         <a class="popup" href="/{{ image.filename }}" rel="image" 
         title="{% for tag in image.tag.all %}{{ tag.name }}&nbsp;&nbsp;{% endfor %}&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;{{ image.description }}">
-            <img src="/{{ image.filename }}"/>
+            <img src="/thumbnail/{{ image.filename }}"/>
         </a>
     {% endfor %}
     </div>
 </div>
-<link class="next" next="{{ nextpage }}" />
+<link class="next" href="/admin?{{ nextparams }}" />
 {% endblock %}

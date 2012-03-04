@@ -1,5 +1,4 @@
 $(function(){
-    $(".next").attr("href", document.location.href + "&page=" + $(".next").attr("next"));
     $.autopager({
         content:".body",
         link:".next",

@@ -1,0 +1,63 @@
+#!/usr/bin/env ruby
+
+require 'digest/sha1'
+require 'net/http'
+
+# capture png file
+tmpfile = "/tmp/image_upload#{$$}.png"
+filename = File.basename(tmpfile)
+imagefile = ARGV[1]
+
+if imagefile && File.exist?(imagefile) then
+  system "sips -s format png \"#{imagefile}\" --out \"#{tmpfile}\""
+else
+  system "screencapture -i \"#{tmpfile}\""
+  if File.exist?(tmpfile) then
+    system "sips -d profile --deleteColorManagementProperties \"#{tmpfile}\""  
+  end
+end
+
+if !File.exist?(tmpfile) then
+  exit
+end
+
+imagedata = File.read(tmpfile)
+File.delete(tmpfile)
+
+# upload
+boundary = '----BOUNDARYBOUNDARY----'
+
+HOST = '127.0.0.1'
+CGI = '/gyazo'
+UA   = 'Gyazo/1.0.1'
+SALT = 'hoge'
+
+imagehash = Digest::SHA1.hexdigest(imagedata+SALT)
+
+data = <<EOF
+--#{boundary}\r
+content-disposition: form-data; name="hash"\r
+\r
+#{imagehash}\r
+--#{boundary}\r
+content-disposition: form-data; name="imagedata"; filename=#{filename}\r
+\r
+#{imagedata}\r
+--#{boundary}--\r
+EOF
+
+header ={
+  'Content-Length' => data.length.to_s,
+  'Content-type' => "multipart/form-data; boundary=#{boundary}",
+  'User-Agent' => UA
+}
+
+Net::HTTP.start(HOST,8000){|http|
+  res = http.post(CGI,data,header)
+  url = res.response.body
+  IO.popen("pbcopy","r+"){|io|
+    io.write url
+    io.close
+  }
+  system "open #{url}"
+}

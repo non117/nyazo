@@ -1,0 +1,13 @@
+{
+  "name": "post to nyazo",
+  "description": "post images to nyazo by U_E_D",
+  "version": "0.1",
+  "permissions": [
+  	"contextMenus",
+	"tabs",
+    "http://*/*",
+    "https://*/*"
+	],
+  "background_page": "background.html",
+  "content_security_policy": "default-src 'self'; connect-src *; img-src *"
+}

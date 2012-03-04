@@ -5,3 +5,5 @@
 *.pyc
 *.pyo
 src/pic/images
+.DS_Store
+*~

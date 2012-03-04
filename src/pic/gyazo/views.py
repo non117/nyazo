@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import hashlib
 import os
-import urllib2
+import urllib, urllib2
+from PIL import Image as Image_
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.paginator import Paginator, EmptyPage
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
@@ -21,6 +23,7 @@ except ObjectDoesNotExist:
     prev_name = "XXX"
 
 def index(request):
+    cache.get("image_list")
     try:
         tag = Tag.objects.get(name="Gyazo")
     except ObjectDoesNotExist:
@@ -66,11 +69,16 @@ def admin(request):
         try:
             contacts = paginator.page(page)
             nextpage = int(page) + 1
-        except EmptyPage:
-            contacts = paginator.page(paginator.num_pages)
+        except (EmptyPage, PageNotAnInteger):
+            contacts = []
             nextpage = ""
+        get_q = dict(request.GET.items())
+        get_q["page"] = nextpage
+        nextparams = urllib.urlencode(get_q)
+        number = u"%d件" % len(image_list)
         return direct_to_template(request, "admin.html", {"contacts":contacts,
-                                                          "nextpage":nextpage,
+                                                          "number":number,
+                                                          "nextparams":nextparams,
                                                           "tags":all_tags
                                                           })
 
@@ -122,8 +130,9 @@ def urlpost(request):
                 req.add_header("Referer","http://www.pixiv.net")
             image_data = urllib2.urlopen(req).read()
             tag,_ = Tag.objects.get_or_create(name=tag)
-            save_image(image_name, image_data, [tag], url)
-        return HttpResponse()
+            save_image(image_name, image_data, [tag], url, url)
+            return HttpResponse("success")
+        return HttpResponse("hash not match")
 
 @csrf_exempt
 def gyazo(request):
@@ -144,9 +153,13 @@ def gyazo(request):
     
 def save_image(image_name, image_data, tags, description="", permlink="", meta=""):
     image_path = os.path.join(IMG_DIR, image_name)
+    thumbnail_path = os.path.join(IMG_DIR, "thumbnail", image_name)
     image_url = os.path.join(HOST, image_name)
     with open(image_path, 'w') as f:
         f.write(image_data)
+    thumb = Image_.open(image_path)
+    thumb.thumbnail((200,200))
+    thumb.save(thumbnail_path)
     # DBに保存
     image_obj = Image(filename=image_name, description=description,
                       permlink=permlink, meta=meta)

@@ -9,10 +9,10 @@
     <div class="body">
     {% for contact in contacts.object_list %}
         <a class="popup" href="/{{ contact.filename }}" rel="image" title="{{ contact.description }}">
-            <img src="/{{ contact.filename }}"/>
+            <img src="/thumbnail/{{ contact.filename }}"/>
         </a>
     {% endfor %}
     </div>
 </div>
-<link class="next" href="/admin?page={{ nextpage }}" />
+<link class="next" href="?page={{ nextpage }}" />
 {% endblock %}
