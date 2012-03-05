@@ -74,6 +74,8 @@ def admin(request):
             nextpage = ""
         get_q = dict(request.GET.items())
         get_q["page"] = nextpage
+        for key, val in get_q.items():
+            if isinstance(val, unicode): get_q[key] = val.encode("utf-8")
         nextparams = urllib.urlencode(get_q)
         number = u"%d件" % len(image_list)
         return direct_to_template(request, "admin.html", {"contacts":contacts,
