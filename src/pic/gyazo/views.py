@@ -88,7 +88,6 @@ def logout(request):
 
 def gen_next_name():
     ''' ランダムっぽく見える名前を生成する. '''
-    global prev_name
     # 桁数
     base = 3
     # 62進数の変換表
@@ -98,6 +97,8 @@ def gen_next_name():
              30:'h',31:'F',32:'M',33:'L',34:'S',35:'N',36:'j',37:'b',38:'y',39:'Z',
              40:'r',41:'U',42:'x',43:'q',44:'v',45:'H',46:'d',47:'P',48:'f',49:'u',
              50:'I',51:'3',52:'6',53:'R',54:'Q',55:'C',56:'i',57:'e',58:'K',59:'B',60:'1',61:'A'}
+    global prev_name
+    prev_name = prev_name.split(".")[0].replace("/","")
     num = 0
     # 文字列から10進数に復号化
     for k,v in n_map.items():
@@ -112,8 +113,9 @@ def gen_next_name():
     for i in range(base):
         lis.append(n_map[new_num%62])
         new_num = new_num/62
+    print lis
     prev_name = ''.join(lis)
-    return prev_name
+    return os.path.join(prev_name[0], prev_name[1:])
 
 @csrf_exempt
 def urlpost(request):
@@ -154,11 +156,15 @@ def gyazo(request):
 def save_image(image_name, image_data, tags, description="", permlink="", meta=""):
     image_path = os.path.join(IMG_DIR, image_name)
     thumbnail_path = os.path.join(IMG_DIR, "thumbnail", image_name)
+    if not os.path.exists(os.path.dirname(image_path)):
+        os.mkdir(os.path.dirname(image_path))
+    if not os.path.exists(os.path.dirname(thumbnail_path)):
+        os.mkdir(os.path.dirname(thumbnail_path))
     image_url = os.path.join(HOST, image_name)
     with open(image_path, 'w') as f:
         f.write(image_data)
     thumb = Image_.open(image_path)
-    thumb.thumbnail((200,200))
+    thumb.thumbnail((250,250))
     thumb.save(thumbnail_path)
     # DBに保存
     image_obj = Image(filename=image_name, description=description,
@@ -167,6 +173,21 @@ def save_image(image_name, image_data, tags, description="", permlink="", meta="
     image_obj.tag = tags
     image_obj.save()
     return image_url
+
+@login_required
+def edit(request):
+    if request.method == "POST":
+        id = request.POST["id"]
+        description = request.POST.get("description", "")
+        tags = filter(lambda s:s!="", request.POST["tags"].split(","))
+        image = Image.objects.get(id)
+        if description:
+            image.description = description
+        if tags:
+            tags = Tag.objects.filter(name__in=tags)
+            image.tag = tags
+        image.save()
+        return HttpResponse("saved")
 
 @login_required
 def delete(request):

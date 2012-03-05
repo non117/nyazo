@@ -58,7 +58,13 @@ input[type=text]{
         </form>
     </div>
 </div>
-
+<div style="display:none;">
+    <div id="edit">
+            <ul class="alltag">{% for tag in tags %}<li>{{ tag }}</li>{% endfor %}</ul>
+            <input type="text" class="tags" name="tags" value=""/>
+            説明 <input type="text" name="description" width="100px"><br/>
+    </div>
+</div>
 <div id="content">
     <div id="header">
         <a href="{% url index %}">index</a>

@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     url(r'^logout$', 'gyazo.views.logout', name='logout'),
     url(r'^admin$', 'gyazo.views.admin', name='admin'),
     url(r'^delete$', 'gyazo.views.delete', name='delete'),
+    url(r'^edit$', 'gyazo.views.edit', name='edit'),
     url(r'^post$', 'gyazo.views.urlpost', name='urlpost'),
     (r'^(?P<path>.*)$', 'django.views.static.serve',{'document_root': IMG_DIR},),
 )
