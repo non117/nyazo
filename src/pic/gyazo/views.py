@@ -2,7 +2,7 @@
 import hashlib
 import os
 import urllib, urllib2
-from PIL import Image as Image_
+import Image as Image_
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
