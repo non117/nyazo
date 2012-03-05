@@ -113,7 +113,6 @@ def gen_next_name():
     for i in range(base):
         lis.append(n_map[new_num%62])
         new_num = new_num/62
-    print lis
     prev_name = ''.join(lis)
     return os.path.join(prev_name[0], prev_name[1:])
 

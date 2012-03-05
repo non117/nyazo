@@ -4,6 +4,9 @@
 .gitignore~
 *.pyc
 *.pyo
-src/pic/images
+*.jpg
+*.png
+*.gif
+*.jpeg
 .DS_Store
 *~
