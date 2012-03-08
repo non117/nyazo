@@ -42,7 +42,7 @@ def index(request):
 @login_required
 def admin(request):
     all_tags = Tag.objects.all().values_list("name", flat=True)
-    if request.method == "POST":
+    if request.method == "POST"  and request.user.is_superuser:
         image_list = request.FILES.getlist("imagedata")
         tags = filter(lambda s:s!="", request.POST["tags"].split(","))
         new_tags = list(set(tags) - (set(tags) & set(all_tags)))
@@ -178,7 +178,7 @@ def save_image(image_name, image_data, tags, description="", permlink="", meta="
 
 @login_required
 def edit(request):
-    if request.method == "POST":
+    if request.method == "POST" and request.user.is_superuser:
         id = int(request.POST["id"])
         description = request.POST.get("description", "")
         tags = filter(lambda s:s!="", request.POST["tags"].split(","))
@@ -193,7 +193,7 @@ def edit(request):
 
 @login_required
 def delete(request):
-    if request.method == "POST":
+    if request.method == "POST" and request.user.is_superuser:
         id = int(request.POST.get("id", ""))
         try:
             image = Image.objects.get(id=id)
