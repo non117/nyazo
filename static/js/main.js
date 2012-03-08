@@ -10,8 +10,11 @@ $(function(){
         $("#fancybox-title-float-right").append('<a id="delete" style="display: inline; "></a>');
         $("#delete").click(function(){
             if(window.confirm("本当に削除しますか？")){
-                $(this).load("/delete?name="+$("#fancybox-img").attr("src"));
-                location.reload();
+                $.ajax({
+                    type: "POST",
+                    url: "/delete",
+                    data: "id=" + $("#title").attr("key") + "&csrfmiddlewaretoken=" + $("input[name='csrfmiddlewaretoken']").val(),
+                });
             }
         });
     }
@@ -59,7 +62,7 @@ $(function(){
             $(".edit_tags").attr("value",title[0]);
             $("input[name='description']").attr("value", title[1].replace(/,/g,""));
             $("#fancybox-wrap input[name='id']").attr("value", id);
-            $(".edit .edit_tags").tokenField({regex:/.+/i});
+            $("#fancybox-wrap .edit .edit_tags").tokenField({regex:/.+/i});
         }
     });
     
@@ -77,18 +80,12 @@ $(function(){
             $.ajax({
                 type: "POST",
                 url: "/edit",
-                data:$("#fancybox-wrap .edit input[name='tags'],#fancybox-wrap input[name='description'],#fancybox-wrap input[name='id']"),
+                data:$("input[name='csrfmiddlewaretoken'],#fancybox-wrap .edit input[name='tags'],#fancybox-wrap input[name='description'],#fancybox-wrap input[name='id']"),
             });
             $("#fancybox-wrap .edit").remove();
             $("#title").text(title);
             $("#title")[0];
         }
-    });
-    //$("#fancybox-wrap").toggle(alert(1));
-    
-    
-    $("#fancybox-left,#fancybox-right,#fancybox-close").click(function(){
-        $("#fancybox-wrap .edit").remove();
     });
 });
 

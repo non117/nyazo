@@ -84,6 +84,7 @@ def admin(request):
                                                           "tags":all_tags
                                                           })
 
+@login_required
 def logout(request):
     auth_logout(request)
     return HttpResponseRedirect(reverse("index"))
@@ -175,7 +176,6 @@ def save_image(image_name, image_data, tags, description="", permlink="", meta="
     image_obj.save()
     return image_url
 
-@csrf_exempt
 @login_required
 def edit(request):
     if request.method == "POST":
@@ -193,12 +193,13 @@ def edit(request):
 
 @login_required
 def delete(request):
-    if request.GET.get("name"):
-        name = "/".join(request.GET["name"].split("/")[-2:])
+    if request.method == "POST":
+        id = int(request.POST.get("id", ""))
         try:
-            image = Image.objects.get(filename=name)
+            image = Image.objects.get(id=id)
         except ObjectDoesNotExist:
             return HttpResponse()
+        name = image.filename
         image.delete()
         image_path = os.path.join(IMG_DIR, name)
         os.remove(image_path)
