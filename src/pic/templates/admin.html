@@ -70,9 +70,11 @@ input[type=text]{
 <div id="content">
     <div id="header">
         <a href="{% url index %}">index</a>
-        <a href="{% url admin %}">admin</a>
-        <a href="#upload" class="popup">upload</a>
-        <a href="{% url logout %}">logout</a>
+        {% if user.is_superuser %}
+            <a href="{% url admin %}">admin</a>
+            <a href="#upload" class="popup">upload</a>
+            <a href="{% url logout %}">logout</a>
+        {% endif %}
         <ul class="alltag">{% for tag in tags %}<li tag="{{ tag }}">{{ tag }}</li>{% endfor %}</ul>
         <form method="GET">
         <input type="hidden" name="tags" id="search_tag" />
