@@ -20,12 +20,15 @@ $(function(){
         content:".body",
         link:".next",
         load:function(){
-            $(this[0].getElementsByTagName("a")).fancybox({ onComplete:delete_image });
+            $(this[0].getElementsByTagName("a")).fancybox({
+                                                    onComplete:delete_image,
+                                                    onStart:function(){$("#fancybox-wrap .edit").remove();} 
+                                                    });
             $(this[0].getElementsByTagName("img")).MyThumbnail(thumbnail_settings);
         }
     });
     $(".body img").MyThumbnail(thumbnail_settings);
-    $(".popup").fancybox({ onComplete:delete_image });
+    $(".popup").fancybox({ onComplete:delete_image, onStart:function(){$("#fancybox-wrap .edit").remove();} });
     
     
     
@@ -48,5 +51,44 @@ $(function(){
         }
     });
     
+    $("#fancybox-wrap").click(function(e){
+        if(e.target.getAttribute("id")=="title"){
+            var title = $("#title").text().replace(/\s/g,",").replace(/,,/g,",").split("|");
+            var id = $("#title").attr("key");
+            $("#fancybox-title").after($(".edit").clone());
+            $(".edit_tags").attr("value",title[0]);
+            $("input[name='description']").attr("value", title[1].replace(/,/g,""));
+            $("#fancybox-wrap input[name='id']").attr("value", id);
+            $(".edit .edit_tags").tokenField({regex:/.+/i});
+        }
+    });
+    
+    $("#fancybox-wrap").click(function(e){
+        if(e.target.localName=="li" && e.target.id){
+            $("#fancybox-wrap .token-input input").attr("value",e.target.textContent);
+            $("#fancybox-wrap .token-input input").blur();
+        }
+    });
+    
+    $("#fancybox-wrap").click(function(e){
+        if(e.target.id=="edit_submit"){
+            var title = $("#fancybox-wrap .edit input[name='tags']").val().replace(/,/g," ") + 
+                        "  |  " + $("#fancybox-wrap input[name='description']").val();
+            $.ajax({
+                type: "POST",
+                url: "/edit",
+                data:$("#fancybox-wrap .edit input[name='tags'],#fancybox-wrap input[name='description'],#fancybox-wrap input[name='id']"),
+            });
+            $("#fancybox-wrap .edit").remove();
+            $("#title").text(title);
+            $("#title")[0];
+        }
+    });
+    //$("#fancybox-wrap").toggle(alert(1));
+    
+    
+    $("#fancybox-left,#fancybox-right,#fancybox-close").click(function(){
+        $("#fancybox-wrap .edit").remove();
+    });
 });
 

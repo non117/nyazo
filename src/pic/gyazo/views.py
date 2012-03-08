@@ -121,7 +121,7 @@ def gen_next_name():
 @csrf_exempt
 def urlpost(request):
     if request.method == "POST":
-        url = request.POST.get("url", "")
+        url = request.POST.get("url", "").split("?")[0]
         hash = request.POST.get("hash", "")
         tag = request.POST.get("tag", "web")
         server_hash = hashlib.sha1(url+SALT).hexdigest()
@@ -175,17 +175,18 @@ def save_image(image_name, image_data, tags, description="", permlink="", meta="
     image_obj.save()
     return image_url
 
+@csrf_exempt
 @login_required
 def edit(request):
     if request.method == "POST":
-        id = request.POST["id"]
+        id = int(request.POST["id"])
         description = request.POST.get("description", "")
         tags = filter(lambda s:s!="", request.POST["tags"].split(","))
-        image = Image.objects.get(id)
+        image = Image.objects.get(id=id)
         if description:
             image.description = description
         if tags:
-            tags = Tag.objects.filter(name__in=tags)
+            tags = map(lambda name: Tag.objects.get_or_create(name=name)[0],tags)
             image.tag = tags
         image.save()
         return HttpResponse("saved")
@@ -193,7 +194,7 @@ def edit(request):
 @login_required
 def delete(request):
     if request.GET.get("name"):
-        name = request.GET["name"].split("/")[-1]
+        name = "/".join(request.GET["name"].split("/")[-2:])
         try:
             image = Image.objects.get(filename=name)
         except ObjectDoesNotExist:

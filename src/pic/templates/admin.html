@@ -59,10 +59,12 @@ input[type=text]{
     </div>
 </div>
 <div style="display:none;">
-    <div id="edit">
-            <ul class="alltag">{% for tag in tags %}<li>{{ tag }}</li>{% endfor %}</ul>
-            <input type="text" class="tags" name="tags" value=""/>
-            説明 <input type="text" name="description" width="100px"><br/>
+    <div class="edit">
+            <ul class="alltag">{% for tag in tags %}<li id="{{ tag }}">{{ tag }}</li>{% endfor %}</ul>
+            <input type="text" name="id" value="" style="display:none;"/>
+            <input type="text" class="edit_tags" name="tags" value=""/>
+            詳細 <input type="text" name="description" width="100px"><button id="edit_submit">submit</button>
+            
     </div>
 </div>
 <div id="content">
@@ -81,7 +83,7 @@ input[type=text]{
     <div class="body">
     {% for image in contacts.object_list %}
         <a class="popup" href="/{{ image.filename }}" rel="image" 
-        title="{% for tag in image.tag.all %}{{ tag.name }}&nbsp;&nbsp;{% endfor %}&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;{{ image.description }}">
+        title="<div id='title' key='{{ image.id }}'>{% for tag in image.tag.all %}{{ tag.name }}&nbsp;&nbsp;{% endfor %}&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;{{ image.description }}</div>">
             <img src="/thumbnail/{{ image.filename }}"/>
         </a>
     {% endfor %}
