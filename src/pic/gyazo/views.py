@@ -5,7 +5,6 @@ import urllib, urllib2
 import Image as Image_
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
-from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
@@ -23,13 +22,13 @@ except ObjectDoesNotExist:
     prev_name = "XXX"
 
 def index(request):
-    cache.get("image_list")
+    ''' 誰でも閲覧可能なトップページ '''
     try:
         tag = Tag.objects.get(name="Gyazo")
     except ObjectDoesNotExist:
         tag = None
     image_list = Image.objects.filter(tag=tag).order_by("-created")
-    paginator = Paginator(image_list, 35)
+    paginator = Paginator(image_list, 50)
     page = request.GET.get('page', '1')
     try:
         contacts = paginator.page(page)
@@ -41,10 +40,13 @@ def index(request):
 
 @login_required
 def admin(request):
+    ''' 管理画面 '''
     all_tags = Tag.objects.all().values_list("name", flat=True)
+    # ファイルシステムから画像をアップロードする場合
     if request.method == "POST"  and request.user.is_superuser:
         image_list = request.FILES.getlist("imagedata")
         tags = filter(lambda s:s!="", request.POST["tags"].split(","))
+        # TODO: 改良の余地ありget_or_create
         new_tags = list(set(tags) - (set(tags) & set(all_tags)))
         for tag_name in new_tags:
             Tag.objects.create(name=tag_name)
@@ -56,6 +58,7 @@ def admin(request):
             image_data = image.read()
             save_image(image_name, image_data, tags, description or image.name)
         return HttpResponseRedirect(reverse("admin"))
+    # 一覧を表示
     else:
         keyword = request.GET.get("keyword","")
         if request.GET.get("tags"):
@@ -64,7 +67,7 @@ def admin(request):
         else:
             image_list = Image.objects.filter(description__contains=keyword).order_by("-created").distinct()
         
-        paginator = Paginator(image_list, 35)
+        paginator = Paginator(image_list, 50)
         page = request.GET.get('page', '1')
         try:
             contacts = paginator.page(page)
@@ -121,6 +124,7 @@ def gen_next_name():
 
 @csrf_exempt
 def urlpost(request):
+    ''' Chrome拡張から画像をpostする '''
     if request.method == "POST":
         url = request.POST.get("url", "").split("?")[0]
         hash = request.POST.get("hash", "")
@@ -140,6 +144,7 @@ def urlpost(request):
 
 @csrf_exempt
 def gyazo(request):
+    ''' Gyazo.appからアップロードされる画像の処理 '''
     if request.method == "POST":
         hash = request.POST.get("hash", "")
         # 拡張子を特定
@@ -156,6 +161,7 @@ def gyazo(request):
     return HttpResponse()
     
 def save_image(image_name, image_data, tags, description="", permlink="", meta=""):
+    ''' 一般的に画像を保存する処理 '''
     image_path = os.path.join(IMG_DIR, image_name)
     thumbnail_path = os.path.join(IMG_DIR, "thumbnail", image_name)
     if not os.path.exists(os.path.dirname(image_path)):
@@ -178,6 +184,7 @@ def save_image(image_name, image_data, tags, description="", permlink="", meta="
 
 @login_required
 def edit(request):
+    ''' description, tagの編集を処理する '''
     if request.method == "POST" and request.user.is_superuser:
         id = int(request.POST["id"])
         description = request.POST.get("description", "")
@@ -193,6 +200,7 @@ def edit(request):
 
 @login_required
 def delete(request):
+    ''' 画像を削除する '''
     if request.method == "POST" and request.user.is_superuser:
         id = int(request.POST.get("id", ""))
         try:
