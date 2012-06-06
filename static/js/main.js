@@ -19,17 +19,7 @@ $(function(){
         });
     }
     
-    $.autopager({
-        content:".body",
-        link:".next",
-        load:function(){
-            $(this[0].getElementsByTagName("a")).fancybox({
-                                                    onComplete:delete_image,
-                                                    onStart:function(){$("#fancybox-wrap .edit").remove();} 
-                                                    });
-            $(this[0].getElementsByTagName("img")).MyThumbnail(thumbnail_settings);
-        }
-    });
+
     $(".body img").MyThumbnail(thumbnail_settings);
     $(".popup").fancybox({ onComplete:delete_image, onStart:function(){$("#fancybox-wrap .edit").remove();} });
     

@@ -119,7 +119,7 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
-    'pic.gyazo',
+    'pic',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

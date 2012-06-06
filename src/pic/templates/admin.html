@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load pagelist %}
 {# <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> #}
 
 {% block extrahead %}
@@ -82,6 +83,13 @@ input[type=text]{
         {{ number }}
         </form>
     </div>
+    <div class="pagination">
+        <span class="step-links">
+            {% for n in contacts.paginator.page_range|pagelist:contacts.number %}
+                <a href="?page={{ n }}">{{ n }}</a> 
+            {% endfor %}
+        </span>
+    </div>
     <div class="body">
     {% for image in contacts.object_list %}
         <a class="popup" href="/{{ image.filename }}" rel="image" 
@@ -91,5 +99,4 @@ input[type=text]{
     {% endfor %}
     </div>
 </div>
-<link class="next" href="/admin?{{ nextparams }}" />
 {% endblock %}
