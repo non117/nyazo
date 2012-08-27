@@ -5,6 +5,7 @@ import urllib, urllib2
 import Image as Image_
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
@@ -13,6 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.simple import direct_to_template
 
 from pic.gyazo.models import Image, Tag
+from pic.gyazo.forms import RegistrationForm
 from pic.settings import IMG_DIR, HOST, SALT
 
 
@@ -71,12 +73,11 @@ def admin(request):
         page = request.GET.get('page', '1')
         try:
             contacts = paginator.page(page)
-            nextpage = int(page) + 1
         except (EmptyPage, PageNotAnInteger):
             contacts = []
-            nextpage = ""
         get_q = dict(request.GET.items())
-        get_q["page"] = nextpage
+        # pageはtemplateでくっつけてる
+        if "page" in get_q: del get_q["page"]
         for key, val in get_q.items():
             if isinstance(val, unicode): get_q[key] = val.encode("utf-8")
         nextparams = urllib.urlencode(get_q)
@@ -86,6 +87,27 @@ def admin(request):
                                                           "nextparams":nextparams,
                                                           "tags":all_tags
                                                           })
+
+@login_required
+def random_(request):
+    image_list = Image.objects.order_by("?")[:50]
+    return direct_to_template(request, "random.html", {"images":image_list})
+
+def register(request):
+    if request.method == "GET":
+        f = RegistrationForm()
+        return direct_to_template(request, "register.html", {"form":f})
+    else:
+        f = RegistrationForm(request.POST)
+        if f.is_valid():
+            user = User()
+            user.username = f.cleaned_data["username"]
+            user.set_password(f.cleaned_data["password"])
+            user.is_active = False
+            user.save()
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return direct_to_template(request, "register.html", {"form":f})
 
 @login_required
 def logout(request):

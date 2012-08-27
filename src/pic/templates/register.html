@@ -11,9 +11,6 @@
     margin-right: auto;
     margin-top: 100px;
 }
-#error{
-    color:#d00;
-}
 #form_input{
     margin:10px auto;
 }
@@ -25,20 +22,15 @@
 
 {% block content %}
 <div id="login">
-    {% if form.errors %}
-    <div id="error"><p>おや？ なにかがおかしいです</p></div>
-    {% endif %}
-
-    <form method="post" action=".">
+    <form method="post">
         <table id="form_input">
-            <tr><td>{{ form.username.label_tag }}:</td><td>{{ form.username }}</td></tr>
-            <tr><td>{{ form.password.label_tag }}:</td><td>{{ form.password }}</td></tr>
+            <tr><td>{{ form.username.label }}:</td><td>{{ form.username }}</td></tr>
+            <tr><td>{{ form.password.label }}:</td><td>{{ form.password }}</td></tr>
         </table>
         {% csrf_token %}
         <div id="submit">
-            <input type="submit" value="ログイン" />
+            <input type="submit" value="登録" />
         </div>
-        <input type="hidden" name="next" value="{{ next }}" />
     </form>
 </div>
 {% endblock %}

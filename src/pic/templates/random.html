@@ -1,0 +1,12 @@
+{% extends "admin.html" %}
+{% block search %}{% endblock %}
+{% block images %}
+    <div class="body">
+    {% for image in images %}
+        <a class="popup" href="/{{ image.filename }}" rel="image" 
+        title="<div id='title' key='{{ image.id }}'>{% for tag in image.tag.all %}{{ tag.name }}&nbsp;&nbsp;{% endfor %}&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;{{ image.description }}</div>">
+            <img src="/thumbnail/{{ image.filename }}"/>
+        </a>
+    {% endfor %}
+    </div>
+{% endblock %}
