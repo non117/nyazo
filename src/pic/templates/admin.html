@@ -5,7 +5,8 @@
 {% block extrahead %}
 <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}token-field/stylesheets/token-field.css"/>
 <script type="text/javascript" src="{{ STATIC_URL }}token-field/javascripts/jquery.token-field.js"></script>
-
+<script type="text/javascript" src="{{ STATIC_URL }}copybutton/swfobject.js"></script>
+<script type="text/javascript">var static_url = {{ STATIC_URL }}</script>
 <style type="text/css">
 #upload{
     font-size:0.9em;
@@ -95,8 +96,10 @@ input[type=text]{
     </div>
     <div class="body">
     {% for image in contacts.object_list %}
-        <a class="popup" href="/{{ image.filename }}" rel="image" 
-        title="<div id='title' key='{{ image.id }}'>{% for tag in image.tag.all %}{{ tag.name }}&nbsp;&nbsp;{% endfor %}&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;{{ image.description }}</div>">
+        <a class="popup" href="/{{ image.filename }}" rel="image"
+        title="<div id='title' key='{{ image.id }}'>
+        {% for tag in image.tag.all %}{{ tag.name }}&nbsp;&nbsp;{% endfor %}
+        &nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;{{ image.description }}</div>">
             <img src="/thumbnail/{{ image.filename }}"/>
         </a>
     {% endfor %}

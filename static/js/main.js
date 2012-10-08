@@ -6,7 +6,11 @@ $(function(){
         imageDivClass:"image"
     }
     
-    function delete_image(){
+    function set_titles(){
+        var avocado = '<td><div id="copybutton"><script type="text/javascript">\
+                        swfobject.embedSWF(static_url + "/copybutton/CopyButton.swf","copybutton","24","24","9.0.0",null,\
+                        {copyText:$("#fancybox-img").attr("src")},{wmode:"transparent"});</script></div></td>';
+        $("#fancybox-title-float-left").before(avocado);
         $("#fancybox-title-float-right").append('<a id="delete" style="display: inline; "></a>');
         $("#delete").click(function(){
             if(window.confirm("本当に削除しますか？")){
@@ -19,9 +23,12 @@ $(function(){
         });
     }
     
+    function before_fancy_load(x){
+        $("#fancybox-wrap .edit").remove();
+    }
 
     $(".body img").MyThumbnail(thumbnail_settings);
-    $(".popup").fancybox({ onComplete:delete_image, onStart:function(){$("#fancybox-wrap .edit").remove();} });
+    $(".popup").fancybox({ onComplete:set_titles, onStart:before_fancy_load });
     
     
     
