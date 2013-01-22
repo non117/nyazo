@@ -233,4 +233,6 @@ def delete(request):
         image.delete()
         image_path = os.path.join(IMG_DIR, name)
         os.remove(image_path)
+        thumbnail_path = os.path.join(IMG_DIR, "thumbnail", name)
+        os.remove(thumbnail_path)
     return HttpResponse()
