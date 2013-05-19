@@ -26,3 +26,11 @@
 .popuped img{
     margin-top:-50%;
 }
+
+ul.alltag li{
+	background-color:#ECEEF5;
+}
+
+ul.alltag li.search {
+	background-color:#CAD4E7;
+}
