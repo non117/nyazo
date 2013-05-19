@@ -4,14 +4,25 @@ $(function(){
         thumbHeight:150,
         backgroundColor:"#ccc",
         imageDivClass:"image"
-    }
+    };
     
+    // タイトル位置を画面中央に補正
+    function fix_title_pos() {
+        var left = ($("#fancybox-wrap").innerWidth()
+                    - $("#fancybox-title").innerWidth()
+                    - $("#delete").innerWidth()) / 2;
+        $("#fancybox-title").css("left", left);
+    }
+
     function set_titles(){
+        // コピペボタン(Avocado button)
         var avocado = '<td><div id="copybutton"><script type="text/javascript">\
                         swfobject.embedSWF(static_url + "/copybutton/CopyButton.swf","copybutton","24","24","9.0.0",null,\
                         {copyText:$("#fancybox-img").attr("src")},{wmode:"transparent"});</script></div></td>';
         $("#fancybox-title-float-left").before(avocado);
-        $("#fancybox-title-float-right").append('<a id="delete" style="display: inline; "></a>');
+
+        //delete button
+        $("#fancybox-title-float-right").after('<td id="delete"></td>');
         $("#delete").click(function(){
             if(window.confirm("本当に削除しますか？")){
                 $.ajax({
@@ -21,6 +32,8 @@ $(function(){
                 });
             }
         });
+
+        fix_title_pos();
     }
     
     function before_fancy_load(x){
@@ -28,31 +41,38 @@ $(function(){
     }
 
     $(".body img").MyThumbnail(thumbnail_settings);
-    $(".popup").fancybox({ onComplete:set_titles, onStart:before_fancy_load });
-    
+    $(".popup").fancybox({ onComplete:set_titles,
+                           onCleanup:before_fancy_load });
     
     
     $(".tags").tokenField({regex:/.+/i});
     
     $("#upload .alltag li").click(function(){
-        $(".token-input input").attr("value",$(this).text());
+        $(".token-input input").attr("value", $(this).text());
         $(".token-input input").blur();
     });
     
+    // ミニタグクラウド
     $("#header .alltag li").click(function(){
-        if($(this).hasClass("search")){
-            $(this).attr("style","background-color:#ECEEF5;");
-            $(this).removeClass("search");
-            $("#search_tag").val($("#search_tag").val().replace("," + $(this).attr("tag"),""));
-        }else{
-            $(this).attr("style","background-color:#CAD4E7;");
-            $(this).addClass("search");
-            $("#search_tag").val($("#search_tag").val() + "," + $(this).attr("tag"));
+        var tag = $(this).attr("tag");
+        var val = $("#search_tag").val();
+
+        if($(this).hasClass("search")) {
+            val = val.replace("," + tag, "");
+        } else {
+            val = val + "," + tag;
         }
+        $("#search_tag").val(val);
+
+        $(this).toggleClass("search");
     });
     
+    // fancy-box view-mode title-button
     $("#fancybox-wrap").click(function(e){
         if(e.target.getAttribute("id")=="title"){
+            if($("#fancybox-wrap .edit").length != 0)
+                return;
+
             var title = $("#title").text().replace(/\s/g,",").replace(/,,/g,",").split("|");
             var id = $("#title").attr("key");
             $("#fancybox-title").after($(".edit").clone());
@@ -63,6 +83,7 @@ $(function(){
         }
     });
     
+    // fancy-box edit-mode tag-selection
     $("#fancybox-wrap").click(function(e){
         if(e.target.localName=="li" && e.target.id){
             $("#fancybox-wrap .token-input input").attr("value",e.target.textContent);
@@ -70,10 +91,11 @@ $(function(){
         }
     });
     
+    // fancy-box edit-mode submit-button
     $("#fancybox-wrap").click(function(e){
         if(e.target.id=="edit_submit"){
             var title = $("#fancybox-wrap .edit input[name='tags']").val().replace(/,/g," ") + 
-                        "  |  " + $("#fancybox-wrap input[name='description']").val();
+                    "  |  " + $("#fancybox-wrap input[name='description']").val();
             $.ajax({
                 type: "POST",
                 url: "/edit",
@@ -81,7 +103,8 @@ $(function(){
             });
             $("#fancybox-wrap .edit").remove();
             $("#title").text(title);
-            $("#title")[0];
+
+            fix_title_pos();
         }
     });
 });
