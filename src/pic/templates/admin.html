@@ -74,7 +74,7 @@ input[type=text]{
         <a href="{% url admin %}">list</a>
         <a href="{% url random %}">random</a>
         {% if user.is_superuser %}
-            <a href="#upload" class="popup">upload</a>
+            <a href="#upload" class="popup-upload">upload</a>
         {% endif %}
         <a href="{% url logout %}">logout</a>
         <ul class="alltag">{% for tag in tags %}<li tag="{{ tag }}">{{ tag }}</li>{% endfor %}</ul>
