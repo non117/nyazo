@@ -173,5 +173,29 @@ $(function(){
 			$(".taggit").remove();
 			$("#taggit-submit, #taggit-start").toggle();
 		});
+
+	// D&Dに対応するよー
+	var image_mime = ["image/png", "image/jpeg", "image/tiff"];
+	function stop_bubble(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		return false;
+	}
+	$('html').on('dragover', stop_bubble);
+	$('html').on('dragenter', stop_bubble);
+
+	$("html").on("drop", function(e){
+        stop_bubble(e);
+
+		if(!e.originalEvent.dataTransfer 
+		   || ! e.originalEvent.dataTransfer.files.length)
+			return false;
+
+        var files = e.originalEvent.dataTransfer.files;
+		$("input[name='imagedata']")[0].files = files;
+		
+		$(".popup-upload").click();
+		return false;
+	});
 });
 
