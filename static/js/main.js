@@ -54,7 +54,8 @@ $(function(){
     $(".popup").fancybox({ onComplete:set_titles,
                            onCleanup:before_fancy_unload,
 						   onStart:before_fancy_start});
-    
+    $(".popup-upload").fancybox();
+
     
     $(".tags").tokenField({regex:/.+/i});
     
