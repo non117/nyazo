@@ -176,20 +176,16 @@ $(function(){
 
 	// D&Dに対応するよー
 	var image_mime = ["image/png", "image/jpeg", "image/tiff"];
-	$('html').on('dragover', function(e) {
+	function stop_bubble(e) {
 		e.preventDefault();
 		e.stopPropagation();
 		return false;
-	});
-	$('html').on('dragenter', function(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		return false;
-	});
+	}
+	$('html').on('dragover', stop_bubble);
+	$('html').on('dragenter', stop_bubble);
 
 	$("html").on("drop", function(e){
-        e.preventDefault();
-        e.stopPropagation();
+        stop_bubble(e);
 
 		if(!e.originalEvent.dataTransfer 
 		   || ! e.originalEvent.dataTransfer.files.length)
