@@ -3,7 +3,7 @@ import os
 
 IMG_DIR = "%s/images" % os.path.dirname(os.path.abspath(__file__))
 HOST = "http://localhost:8000/"
-SALT = "hoge"
+SALT = "Supercalifragilisticexpialidocious"
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -16,12 +16,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'test',                      # Or path to database file if using sqlite3.
-        'USER': 'test',                      # Not used with sqlite3.
-        'PASSWORD': 'test',                  # Not used with sqlite3.
-        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '5432',                      # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'users.db',                      # Or path to database file if using sqlite3.
     }
 }
 
