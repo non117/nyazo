@@ -83,6 +83,9 @@ input[type=text]{
         <input type="hidden" name="tags" id="search_tag" />
         キーワード検索 : <input type="text" id="keyword" name="keyword"/> <input type="submit" id="search" value="検索"/>
         {{ number }}
+		<input type="button" id="taggit-start" value="まとめてタグる" />
+		<input type="button" id="taggit-submit" value="する" style="display:none;" />
+
         </form>
         {% endblock %}
     </div>
@@ -96,10 +99,12 @@ input[type=text]{
     </div>
     <div class="body">
     {% for image in contacts.object_list %}
-        <a class="popup" href="/{{ image.filename }}" rel="image"
-        title="<div id='title' key='{{ image.id }}'>
-        {% for tag in image.tag.all %}{{ tag.name }}&nbsp;&nbsp;{% endfor %}
-        &nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;{{ image.description }}</div>">
+        <a class="popup image-pic"
+		   href="/{{ image.filename }}" rel="image"
+		   data-tags="{{ image.tag.all|join:',' }}"
+		   data-key="{{ image.id }}"
+		   data-title="{{ image.description }}"
+		   id="image-{{ image.id }}">
             <img src="/thumbnail/{{ image.filename }}"/>
         </a>
     {% endfor %}
