@@ -135,5 +135,40 @@ $(function(){
             fix_title_pos();
         }
     });
+
+	$('<input type="button" id="taggit-start" value="hoge"/>')
+		.appendTo($("#header"))
+		.click(function(e){
+			// まとめてなんとかぼたん〜
+			$(".image-pic").each(function(i, e){
+				var $this = $(e);
+				console.log($this.html());
+				$('<input type="checkbox" class="taggit" data-key="' + $this.data("key") + '">')
+					.appendTo($this.find(".image"))
+					.click(function(e){e.stopPropagation();});
+			});
+		});
+	$('<input type="button" id="taggit-submit" value="taggit!"/>')
+		.appendTo($("#header"))
+		.click(function(e){
+			$(".taggit:checked").each(function(i,e){
+				var $this = $(e).closest(".image-pic");
+				console.log($this.length);
+				var tags = $this.data("tags").split(",");
+				tags = tags.concat($("#search_tag").val().split(","));
+				$.ajax({
+					type: "POST",
+					url: "/edit",
+					data:{
+						csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val(),
+						tags: tags.join(","),
+						id: $this.data("key"),
+						description: $this.data("title")
+					}
+				});
+				$this.data("tags", tags.join(","));
+            });
+
+		});
 });
 
