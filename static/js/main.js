@@ -18,7 +18,7 @@ $(function(){
     function before_fancy_start(currentArray, currentIndex, currentOpts){
 		var $x = $(currentArray[currentIndex]);
         var title = '<div id="title" data-key="' + $x.data("key") + '">'
-				+ $x.data("tags").replace(',', '&nbsp;&nbsp;')
+				+ $x.data("tags").replace(/,/g, '&nbsp;&nbsp;')
 				+ '&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;'
 				+ $x.data("title") + '</div>';
 		$x.attr("title", title);
@@ -136,26 +136,27 @@ $(function(){
         }
     });
 
-	$('<input type="button" id="taggit-start" value="hoge"/>')
-		.appendTo($("#header"))
+	$('#taggit-start')
 		.click(function(e){
 			// まとめてなんとかぼたん〜
 			$(".image-pic").each(function(i, e){
 				var $this = $(e);
-				console.log($this.html());
+
 				$('<input type="checkbox" class="taggit" data-key="' + $this.data("key") + '">')
 					.appendTo($this.find(".image"))
 					.click(function(e){e.stopPropagation();});
 			});
+			$("#taggit-submit, #taggit-start").toggle();
 		});
-	$('<input type="button" id="taggit-submit" value="taggit!"/>')
-		.appendTo($("#header"))
+	$('#taggit-submit')
 		.click(function(e){
 			$(".taggit:checked").each(function(i,e){
 				var $this = $(e).closest(".image-pic");
-				console.log($this.length);
+
 				var tags = $this.data("tags").split(",");
 				tags = tags.concat($("#search_tag").val().split(","));
+				tags = tags.filter(function(e){return !!e;});
+
 				$.ajax({
 					type: "POST",
 					url: "/edit",
@@ -168,7 +169,8 @@ $(function(){
 				});
 				$this.data("tags", tags.join(","));
             });
-
+			$(".taggit").remove();
+			$("#taggit-submit, #taggit-start").toggle();
 		});
 });
 
