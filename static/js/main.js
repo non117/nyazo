@@ -38,7 +38,7 @@ $(function(){
                 $.ajax({
                     type: "POST",
                     url: "/delete",
-                    data: "id=" + $("#title").attr("key") + "&csrfmiddlewaretoken=" + $("input[name='csrfmiddlewaretoken']").val(),
+                    data: "id=" + $("#title").data("key") + "&csrfmiddlewaretoken=" + $("input[name='csrfmiddlewaretoken']").val(),
                 });
             }
         });
