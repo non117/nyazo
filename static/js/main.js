@@ -18,15 +18,25 @@ $(function(){
     function before_fancy_start(currentArray, currentIndex, currentOpts){
 		var $x = $(currentArray[currentIndex]);
 
+		// key==-1 <=> 「次」
 		if($x.data("key") == -1) { 
-			window.location = $x.attr("href") + "#next";
-		}
-		
-        var title = '<div id="title" data-key="' + $x.data("key") + '">'
+			var hasNext = "";
+
+			// もし前の画像からの遷移で来たならば
+			// 次のページには#nextをつける
+			if($("#title").length != 0) {
+				hasNext = "#next";
+			}
+
+			window.location = $x.attr("href") + hasNext;
+			$.fancybox.close();
+		} else {
+			var title = '<div id="title" data-key="' + $x.data("key") + '">'
 				+ $x.data("tags").replace(/,/g, '&nbsp;&nbsp;')
 				+ '&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;'
 				+ $x.data("title") + '</div>';
-		$x.attr("title", title);
+			$x.attr("title", title);
+		}
     }
 
     function set_titles(){
@@ -204,7 +214,7 @@ $(function(){
 	});
 
 	if(document.location.hash == "#next") {
-		$(".image-pic").get(0).click();
+		$(".image-pic:nth(0)").click();
 	}
 });
 
