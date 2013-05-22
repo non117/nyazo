@@ -215,6 +215,7 @@ $(function(){
 
 	if(document.location.hash == "#next") {
 		$(".image-pic:nth(0)").click();
+		window.location.hash = "";
 	}
 });
 
