@@ -92,9 +92,12 @@ input[type=text]{
     {% block images %}
     <div class="pagination">
         <span class="step-links">
+			<a href="?page={{ contacts.previous_page_number }}&{{ nextparams }}"> <前 </a>
+
             {% for n in contacts.paginator.page_range|pagelist:contacts.number %}
                 <a href="?page={{ n }}&{{ nextparams }}">{{ n }}</a>
             {% endfor %}
+			<a href="?page={{ contacts.next_page_number }}&{{ nextparams }}"> 次> </a>
         </span>
     </div>
     <div class="body">
