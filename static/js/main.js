@@ -17,6 +17,11 @@ $(function(){
 
     function before_fancy_start(currentArray, currentIndex, currentOpts){
 		var $x = $(currentArray[currentIndex]);
+
+		if($x.data("key") == -1) { 
+			window.location = $x.attr("href") + "#next";
+		}
+		
         var title = '<div id="title" data-key="' + $x.data("key") + '">'
 				+ $x.data("tags").replace(/,/g, '&nbsp;&nbsp;')
 				+ '&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;'
@@ -197,5 +202,9 @@ $(function(){
 		$(".popup-upload").click();
 		return false;
 	});
+
+	if(document.location.hash == "#next") {
+		$(".image-pic").get(0).click();
+	}
 });
 
