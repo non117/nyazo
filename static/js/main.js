@@ -16,8 +16,9 @@ $(function(){
 		var edit_height = $("#fancybox-wrap .edit").height() || 0;
 
 		$.fancybox.resize();
+
+		if(edit_height != 0) $("#fancybox-wrap").stop(true, true);
 		$("#fancybox-wrap")
-			.stop(true, true)
 			.animate({
 				top: "-=" + edit_height + "px"
 			}, 100);
