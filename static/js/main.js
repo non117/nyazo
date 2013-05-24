@@ -12,9 +12,22 @@ $(function(){
                     - $("#fancybox-title").innerWidth()
                     - $("#delete").innerWidth()) / 2;
         $("#fancybox-title").css("left", left);
+		
+		var edit_height = $("#fancybox-wrap .edit").height() || 0;
+
 		$.fancybox.resize();
+
+		if(edit_height != 0) $("#fancybox-wrap").stop(true, true);
+		$("#fancybox-wrap")
+			.animate({
+				top: "-=" + edit_height + "px"
+			}, 100);
     }
 
+	// fancyboxのサムネイルが選択されてから、要素が追加されるまでに行う処理
+	// 要素の生成前にやっておかなければならない処理
+	//   タイトルの生成(タグ依存のため)
+	//   次へ移動(画像なんて無かった)
     function before_fancy_start(currentArray, currentIndex, currentOpts){
 		var $x = $(currentArray[currentIndex]);
 
@@ -39,6 +52,8 @@ $(function(){
 		}
     }
 
+	// fancyboxによる拡大画像読み込み後の処理
+	// 主にタイトルの作成を行う
     function set_titles(){
         // コピペボタン(Avocado button)
         var avocado = '<td><div id="copybutton"><script type="text/javascript">\
@@ -61,6 +76,7 @@ $(function(){
         fix_title_pos();
     }
     
+	// fancybox: 次の画像とかで残ると困る物を削除
     function before_fancy_unload(x){
         $("#fancybox-wrap .edit").remove();
     }
@@ -105,13 +121,17 @@ $(function(){
 			var tags = $x.data("tags").split(",");
 			var name = $x.data("title");
 
-			$(".edit").clone().insertAfter($("#fancybox-title"));
+			var left = ($("#fancybox-wrap").width() 
+						- $(".edit").innerWidth())  / 2;
+			$(".edit").clone()
+				.css("margin-left", left)
+				.insertAfter($("#fancybox-title"));
             $(".edit_tags").attr("value",tags.join(","));
             $("input[name='description']").attr("value", name);
             $("#fancybox-wrap input[name='id']").attr("value", id);
             $("#fancybox-wrap .edit .edit_tags").tokenField({regex:/.+/i});
 			
-			$.fancybox.resize();
+			fix_title_pos();
         }
     });
     
@@ -213,6 +233,7 @@ $(function(){
 		return false;
 	});
 
+	// reload/url直打ちによるfancybox強制オープン対策
 	if(document.location.hash == "#next") {
 		$(".image-pic:nth(0)").click();
 		window.location.hash = "";
