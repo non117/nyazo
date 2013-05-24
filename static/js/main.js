@@ -12,7 +12,19 @@ $(function(){
                     - $("#fancybox-title").innerWidth()
                     - $("#delete").innerWidth()) / 2;
         $("#fancybox-title").css("left", left);
+		
+		var edit_height = $("#fancybox-wrap .edit").height() || 0;
+		var $content = $("#fancybox-content");
+		var ch = $content.height();
+		var top = $(document).scrollTop();
+
 		$.fancybox.resize();
+		$("#fancybox-wrap")
+			.stop(true, true)
+			.animate({
+				top: "-=" + edit_height + "px"
+			}, 100);
+
     }
 
 	// fancyboxのサムネイルが選択されてから、要素が追加されるまでに行う処理
@@ -118,7 +130,7 @@ $(function(){
             $("#fancybox-wrap input[name='id']").attr("value", id);
             $("#fancybox-wrap .edit .edit_tags").tokenField({regex:/.+/i});
 			
-			$.fancybox.resize();
+			fix_title_pos();
         }
     });
     
