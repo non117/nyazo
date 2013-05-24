@@ -15,6 +15,10 @@ $(function(){
 		$.fancybox.resize();
     }
 
+	// fancyboxのサムネイルが選択されてから、要素が追加されるまでに行う処理
+	// 要素の生成前にやっておかなければならない処理
+	//   タイトルの生成(タグ依存のため)
+	//   次へ移動(画像なんて無かった)
     function before_fancy_start(currentArray, currentIndex, currentOpts){
 		var $x = $(currentArray[currentIndex]);
 
@@ -39,6 +43,8 @@ $(function(){
 		}
     }
 
+	// fancyboxによる拡大画像読み込み後の処理
+	// 主にタイトルの作成を行う
     function set_titles(){
         // コピペボタン(Avocado button)
         var avocado = '<td><div id="copybutton"><script type="text/javascript">\
@@ -61,6 +67,7 @@ $(function(){
         fix_title_pos();
     }
     
+	// fancybox: 次の画像とかで残ると困る物を削除
     function before_fancy_unload(x){
         $("#fancybox-wrap .edit").remove();
     }
@@ -213,6 +220,7 @@ $(function(){
 		return false;
 	});
 
+	// reload/url直打ちによるfancybox強制オープン対策
 	if(document.location.hash == "#next") {
 		$(".image-pic:nth(0)").click();
 		window.location.hash = "";
