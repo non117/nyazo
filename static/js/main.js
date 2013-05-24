@@ -14,9 +14,6 @@ $(function(){
         $("#fancybox-title").css("left", left);
 		
 		var edit_height = $("#fancybox-wrap .edit").height() || 0;
-		var $content = $("#fancybox-content");
-		var ch = $content.height();
-		var top = $(document).scrollTop();
 
 		$.fancybox.resize();
 		$("#fancybox-wrap")
@@ -24,7 +21,6 @@ $(function(){
 			.animate({
 				top: "-=" + edit_height + "px"
 			}, 100);
-
     }
 
 	// fancyboxのサムネイルが選択されてから、要素が追加されるまでに行う処理
@@ -124,7 +120,11 @@ $(function(){
 			var tags = $x.data("tags").split(",");
 			var name = $x.data("title");
 
-			$(".edit").clone().insertAfter($("#fancybox-title"));
+			var left = ($("#fancybox-wrap").width() 
+						- $(".edit").innerWidth())  / 2;
+			$(".edit").clone()
+				.css("margin-left", left)
+				.insertAfter($("#fancybox-title"));
             $(".edit_tags").attr("value",tags.join(","));
             $("input[name='description']").attr("value", name);
             $("#fancybox-wrap input[name='id']").attr("value", id);
