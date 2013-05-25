@@ -34,3 +34,15 @@ ul.alltag li{
 ul.alltag li.search {
 	background-color:#CAD4E7;
 }
+
+.edit {
+	width: 600px;
+	background-color: white;
+	opacity: 0.8;
+	padding: 3px 10px;
+	padding-top: 1px;
+	margin-top:10px;
+}
+.edit *{
+	opacity: 1.0;
+}

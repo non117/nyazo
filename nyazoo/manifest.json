@@ -2,12 +2,20 @@
   "name": "post to nyazo",
   "description": "post images to nyazo by U_E_D",
   "version": "0.1",
+  "manifest_version": 2,
   "permissions": [
   	"contextMenus",
 	"tabs",
+	"background",
     "http://*/*",
     "https://*/*"
 	],
-  "background_page": "background.html",
+  "background": {
+    "persistent": true,
+    "scripts": [
+      "sha1.js",
+      "nyazo.js"
+      ]
+    },
   "content_security_policy": "default-src 'self'; connect-src *; img-src *"
 }
