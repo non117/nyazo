@@ -99,16 +99,15 @@ $(function(){
     $(".popup-upload").fancybox();
 
     // tokenField: init
-    $(".tags").tokenField({regex:/.+/i});
+    !!$.fn.tokenField && $(".tags").tokenField({regex:/.+/i});
     
     // tokenField: タグ追加
     function tokenfield_addtag(sel, tag) {
         var already = false,
             $sel    = $(sel);
         $sel.children(".token").each(function (){
-            if($(this).text() == tag + "x") {
+            if($(this).text() == tag + "x") 
                 already = true;
-            }
         });
         if(!already)
             sel.find("input").attr("value", tag).blur();
