@@ -10,8 +10,9 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.MyThumbnail.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}fancybox/jquery.fancybox-1.3.4.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/main.js?{% now "ymdHi" %}"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}copybutton/swfobject.js"></script>
 {% block extrahead %}{% endblock %}
+<script type="text/javascript">var static_url = {{ STATIC_URL }}</script>
 </head>
 <body>
 {% block content %}{% endblock %}
