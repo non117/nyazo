@@ -98,11 +98,25 @@ $(function(){
 						   onStart:before_fancy_start});
     $(".popup-upload").fancybox();
 
+    // tokenField: init
     $(".tags").tokenField({regex:/.+/i});
     
+    // tokenField: タグ追加
+    function tokenfield_addtag(sel, tag) {
+        var already = false,
+            $sel    = $(sel);
+        $sel.children(".token").each(function (){
+            if($(this).text() == tag + "x") {
+                already = true;
+            }
+        });
+        if(!already)
+            sel.find("input").attr("value", tag).blur();
+    }
+
     $("#upload .alltag li").click(function(){
-        $(".token-input input").attr("value", $(this).text());
-        $(".token-input input").blur();
+        var tag = $(this).text();
+        tokenfield_addtag($(".token-field"), tag);
     });
     
     // ミニタグクラウド
@@ -148,9 +162,8 @@ $(function(){
     // fancy-box edit-mode tag-selection
     $("#fancybox-wrap").click(function(e){
         if(e.target.localName=="li" && e.target.id){
-            $("#fancybox-wrap .token-input input")
-				.attr("value", e.target.textContent)
-				.blur();
+            var tag = e.target.textContent;
+            tokenfield_addtag($("#fancybox-wrap .token-field"), tag);
         }
     });
     
