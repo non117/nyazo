@@ -77,8 +77,8 @@ $(function(){
 
     // fancybox: 画像の削除ボタン
     function image_delete_button(x) {
-		var $this = $(this).closest(".image-pic");
-        
+		var $this = $("#image-" + $("#title").data("key"));
+
         if(window.confirm("本当に削除しますか？")){
             $.ajax({
                 type: "POST",
@@ -86,6 +86,12 @@ $(function(){
                 data: {
                     id: $("#title").data("key"), 
                     csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
+                },
+                success: function() {
+                    $this.children().animate({width:0}, 100, "swing", function (){
+                        $this.remove();
+                    });
+                    $.fancybox.close();
                 }
             });
         }
