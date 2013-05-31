@@ -17,11 +17,12 @@ $(function(){
 
 		$.fancybox.resize();
 
-		if(edit_height != 0) $("#fancybox-wrap").stop(true, true);
-		$("#fancybox-wrap")
-			.animate({
-				top: "-=" + edit_height + "px"
-			}, 100);
+		if(edit_height != 0) {
+            $("#fancybox-wrap").stop(true, true);
+        }
+		$("#fancybox-wrap").animate({
+			top: "-=" + edit_height + "px"
+		}, 100);
     }
 
 	// fancyboxのサムネイルが選択されてから、要素が追加されるまでに行う処理
@@ -44,10 +45,10 @@ $(function(){
 			window.location = $x.attr("href") + hasNext;
 			$.fancybox.close();
 		} else {
-			var title = '<div id="title" data-key="' + $x.data("key") + '">'
-				+ $x.data("tags").replace(/,/g, '&nbsp;&nbsp;')
-				+ '&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;'
-				+ $x.data("title") + '</div>';
+			var title = ['<div id="title" data-key="', $x.data("key"), '">'
+				         , $x.data("tags").replace(/,/g, '&nbsp;&nbsp;')
+				         , '&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;'
+				         , $x.data("title"), '</div>'].join("");
 			$x.attr("title", title);
 		}
     }
@@ -62,16 +63,9 @@ $(function(){
         $("#fancybox-title-float-left").before(avocado);
 
         //delete button
-        $("#fancybox-title-float-right").after('<td id="delete"></td>');
-        $("#delete").click(function(){
-            if(window.confirm("本当に削除しますか？")){
-                $.ajax({
-                    type: "POST",
-                    url: "/delete",
-                    data: "id=" + $("#title").data("key") + "&csrfmiddlewaretoken=" + $("input[name='csrfmiddlewaretoken']").val(),
-                });
-            }
-        });
+        $('<td id="delete"></td>')
+            .insertAfter($("#fancybox-title-float-right"))
+            .click(image_delete_button);
 
         fix_title_pos();
     }
@@ -81,13 +75,29 @@ $(function(){
         $("#fancybox-wrap .edit").remove();
     }
 
+    // fancybox: 画像の削除ボタン
+    function image_delete_button(x) {
+		var $this = $(this).closest(".image-pic");
+        
+        if(window.confirm("本当に削除しますか？")){
+            $.ajax({
+                type: "POST",
+                url: "/delete",
+                data: {
+                    id: $("#title").data("key"), 
+                    csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
+                }
+            });
+        }
+    }
+	
+	// fancybox: 起動
     $(".body img").MyThumbnail(thumbnail_settings);
     $(".popup").fancybox({ onComplete:set_titles,
                            onCleanup:before_fancy_unload,
 						   onStart:before_fancy_start});
     $(".popup-upload").fancybox();
 
-    
     $(".tags").tokenField({regex:/.+/i});
     
     $("#upload .alltag li").click(function(){
@@ -148,8 +158,7 @@ $(function(){
     $("#fancybox-wrap").click(function(e){
         if(e.target.id=="edit_submit"){
 
-			var tags = $("#fancybox-wrap .edit input[name='tags']").val()
-					.split(",");
+			var tags = $("#fancybox-wrap .edit input[name='tags']").val().split(",");
 			var name = $("#fancybox-wrap input[name='description']").val();
 			var id = $("#title").data("key");
 			var $x = $("#image-" + id);
@@ -209,7 +218,7 @@ $(function(){
 			$("#taggit-submit, #taggit-start").toggle();
 		});
 
-	// D&Dに対応するよー
+	// D&Dに対応する
 	var image_mime = ["image/png", "image/jpeg", "image/tiff"];
 	function stop_bubble(e) {
 		e.preventDefault();
