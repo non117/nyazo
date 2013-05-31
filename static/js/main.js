@@ -116,7 +116,7 @@ $(function(){
                 already = true;
         });
         if(!already)
-            sel.find("input").attr("value", tag).blur();
+            sel.find("input").eq(1).attr("value", tag).blur();
     }
 
     $("#upload .alltag li").click(function(){
