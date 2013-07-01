@@ -35,8 +35,10 @@ def crop(json_data, img, file_prefix):
     i = -1
     if not json_data.has_key("lines"): #linesが無い場合
         return i
-    
-    areas = [map(dict.values, area["shape"]["point"]) for area in json_data["lines"].get("line", [])]
+    line = json_data["lines"].get("line", [])
+    if isinstance(line, dict):
+        line = [line]
+    areas = [map(dict.values, area["shape"]["point"]) for area in line]
     for i, coords in enumerate(areas):
         box = (
             min(map(int, zip(*coords)[0])) - 5,
