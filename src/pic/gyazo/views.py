@@ -63,11 +63,17 @@ def admin(request):
     # 一覧を表示
     else:
         keyword = request.GET.get("keyword","")
+
         if request.GET.get("tags"):
             tags = Tag.objects.filter(name__in=filter(lambda s:s!="",request.GET["tags"].split(",")))
-            image_list = Image.objects.filter(description__contains=keyword, tag__in=tags).order_by("-created").distinct()
+            image_list = Image.objects.filter(tag__in=tags)
         else:
-            image_list = Image.objects.filter(description__contains=keyword).order_by("-created").distinct()
+            try:
+                tags = [Tag.objects.get(name="Gyazo")]
+                image_list = Image.objects.exclude(tag__in=tags)
+            except ObjectDoesNotExist:
+                image_list = Image.objects
+        image_list = image_list.filter(description__contains=keyword).order_by("-created").distinct()
         
         paginator = Paginator(image_list, 50)
         page = request.GET.get('page', '1')
@@ -92,6 +98,33 @@ def admin(request):
 def random_(request):
     image_list = Image.objects.order_by("?")[:50]
     return direct_to_template(request, "random.html", {"images":image_list})
+
+@login_required
+def allpics(request):
+    all_tags = Tag.objects.all().values_list("name", flat=True)
+    keyword = request.GET.get("keyword","")
+    image_list = Image.objects.filter(description__contains=keyword).order_by("-created").distinct()
+                
+    paginator = Paginator(image_list, 50)
+    page = request.GET.get('page', '1')
+    try:
+        contacts = paginator.page(page)
+    except (EmptyPage, PageNotAnInteger):
+        contacts = []
+    get_q = dict(request.GET.items())
+    # pageはtemplateでくっつけてる
+    if "page" in get_q: del get_q["page"]
+    for key, val in get_q.items():
+        if isinstance(val, unicode): get_q[key] = val.encode("utf-8")
+    nextparams = urllib.urlencode(get_q)
+    number = u"%d件" % len(image_list)
+    pageparams =  {"contacts":contacts,
+                   "number":number,
+                   "nextparams":nextparams,
+                   "tags":all_tags
+    }
+    return direct_to_template(request, "admin.html", pageparams)
+
 
 def register(request):
     if request.method == "GET":
