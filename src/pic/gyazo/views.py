@@ -2,7 +2,9 @@
 import hashlib
 import os
 import urllib, urllib2
+import threading
 import Image as Image_
+from functools import partial
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -15,6 +17,7 @@ from django.views.generic.simple import direct_to_template
 
 from pic.gyazo.models import Image, Tag
 from pic.gyazo.forms import RegistrationForm
+from pic.gyazo.recognize import recognize
 from pic.settings import IMG_DIR, HOST, SALT
 
 
@@ -215,6 +218,14 @@ def gyazo(request):
             return HttpResponse(url)
     return HttpResponse()
     
+def process(image_path, image_id):
+    ''' OCRしてDBにつっこむ '''
+    words = recognize(image_path=image_path)
+    if words:
+        image_obj = Image.objects.get(id=image_id)
+        image_obj.description = words
+        image_obj.save()
+    
 def save_image(image_name, image_data, tags, description="", permlink="", meta=""):
     ''' 一般的に画像を保存する処理 '''
     image_path = os.path.join(IMG_DIR, image_name)
@@ -235,6 +246,11 @@ def save_image(image_name, image_data, tags, description="", permlink="", meta="
     image_obj.save()
     image_obj.tag = tags
     image_obj.save()
+    
+    # OCR処理を裏で
+    t = threading.Thread(target=partial(process, image_path, image_obj.id))
+    t.start()
+    
     return image_url
 
 @login_required

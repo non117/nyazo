@@ -9,4 +9,5 @@
 *.gif
 *.jpeg
 .DS_Store
+settings.py
 *~

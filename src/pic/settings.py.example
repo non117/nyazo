@@ -4,7 +4,7 @@ import os
 IMG_DIR = "%s/images" % os.path.dirname(os.path.abspath(__file__))
 HOST = "http://localhost:8000/"
 SALT = "hoge"
-API_KEY = ""
+api_key = ""
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -121,7 +121,6 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = (
     'pic',
-    'pic.gyazo',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
