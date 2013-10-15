@@ -46,7 +46,7 @@ $(function(){
 			$.fancybox.close();
 		} else {
 			var title = ['<div id="title" data-key="', $x.data("key"), '">'
-				         , $x.data("tags").replace(/,/g, '&nbsp;&nbsp;')
+				         , String($x.data("tags")).replace(/,/g, '&nbsp;&nbsp;')
 				         , '&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;'
 				         , $x.data("title"), '</div>'].join("");
 			$x.attr("title", title);
