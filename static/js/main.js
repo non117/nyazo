@@ -265,5 +265,26 @@ $(function(){
 		$(".image-pic:nth(0)").click();
 		window.location.hash = "";
 	}
-});
+    // タグ検索の時に検索中のタグが強調される奴
+    function parseSearch(search) {
+        var s = (search[0] == "?" ? search.substr(1) : s);
+        var ret = {};
+        s.split("&").forEach(function(e) {
+            var kv = e.split("="),
+                k  = decodeURIComponent(kv[0]),
+                v  = (kv.length != 1 ? decodeURIComponent(kv[1]) : "");
+            ret[k] = v;
+        });
+        return ret;
+    }
+    function markTag() {
+        var tags = parseSearch(document.location.search)["tags"];
+        if(!tags) return;
+        
+        tags.split(",").forEach(function(e) {
+            $('#header .alltag li[tag="' + e + '"]').click();
+        });
+    }
+    markTag();
 
+});
