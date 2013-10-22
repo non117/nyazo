@@ -286,6 +286,6 @@ $(function(){
             $('#header .alltag li[tag="' + e + '"]').click();
         });
     }
-
+    markTag();
 });
 
