@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.simple import direct_to_template
@@ -69,7 +70,10 @@ def admin(request):
 
         if request.GET.get("tags"):
             tags = Tag.objects.filter(name__in=filter(lambda s:s!="",request.GET["tags"].split(",")))
-            image_list = Image.objects.filter(tag__in=tags)
+            query = Q(description__contains=keyword)
+            for tag in tags:
+                query = query and Q(tag=tag)
+                image_list = Image.objects.filter(query).order_by("-created").distinct()
         else:
             try:
                 tags = [Tag.objects.get(name="Gyazo")]
