@@ -209,6 +209,7 @@ $(function(){
 					.appendTo($this.find(".image"))
 					.click(function(e){e.stopPropagation();});
 			});
+            $("#search-form").slideToggle();
 			$("#taggit-submit, #taggit-start").toggle();
 		});
 	$('#taggit-submit')
@@ -233,6 +234,7 @@ $(function(){
 				$this.data("tags", tags.join(","));
             });
 			$(".taggit").remove();
+            $("#search-form").slideToggle();
 			$("#taggit-submit, #taggit-start").toggle();
 		});
 

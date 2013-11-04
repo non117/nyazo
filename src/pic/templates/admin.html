@@ -79,13 +79,14 @@ input[type=text]{
         <a href="{% url logout %}">logout</a>
         <ul class="alltag">{% for tag in tags %}<li tag="{{ tag }}">{{ tag }}</li>{% endfor %}</ul>
         {% block search %}
-        <form method="GET">
+        <form method="GET" id="search-form">
         <input type="hidden" name="tags" id="search_tag" />
         キーワード検索 : <input type="text" id="keyword" name="keyword"/> <input type="submit" id="search" value="検索"/>
         {{ number }}
-		<input type="button" id="taggit-start" value="まとめてタグる" />
-		<input type="button" id="taggit-submit" value="する" style="display:none;" />
-
+        </form>
+        <form id="taggit-form">
+            <input type="button" id="taggit-start" value="まとめてタグる" />
+		    <input type="button" id="taggit-submit" value="する" style="display:none;" />
         </form>
         {% endblock %}
     </div>
