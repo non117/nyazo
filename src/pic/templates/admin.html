@@ -70,8 +70,8 @@ input[type=text]{
 </div>
 <div id="content">
     <div id="header">
-        <a href="{% url admin %}">list</a>
-        <a href="{% url random %}">random</a>
+        <a href="{% url admin %}">admin</a>
+        <a href="{% url list %}">list</a>
         {% if user.is_superuser %}
             <a href="#upload" class="popup-upload">upload</a>
         {% endif %}

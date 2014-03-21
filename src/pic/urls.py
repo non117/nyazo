@@ -13,5 +13,6 @@ urlpatterns = patterns('',
     url(r'^post$', 'gyazo.views.urlpost', name='urlpost'),
     url(r'^random$', 'gyazo.views.random_', name='random'),
     url(r'^register', 'gyazo.views.register', name='register'),
+    url(r'^list', 'gyazo.views.lists', name='list'),
     (r'^(?P<path>.*)$', 'django.views.static.serve',{'document_root': IMG_DIR},),
 )

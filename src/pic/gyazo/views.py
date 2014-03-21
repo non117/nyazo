@@ -44,6 +44,39 @@ def index(request):
         nextpage = ""
     return direct_to_template(request, "index.html", {"contacts":contacts, "nextpage":nextpage})
 
+def lists(request):
+    all_tags = Tag.objects.all().values_list("name", flat=True)
+    if request.method == "GET":
+        keyword = request.GET.get("keyword","")
+        
+        if request.GET.get("tags"):
+            tags = Tag.objects.filter(name__in=filter(lambda s:s!="",request.GET["tags"].split(",")))
+            query = Image.objects.filter(description__contains=keyword)
+            for tag in tags: # and search
+                query = query.filter(tag=tag)
+            image_list = query.order_by("-created").distinct()
+        else:
+            image_list = Image.objects.filter(description__contains=keyword).order_by("-created").distinct()
+        
+        paginator = Paginator(image_list, 50)
+        page = request.GET.get('page', '1')
+        try:
+            contacts = paginator.page(page)
+        except (EmptyPage, PageNotAnInteger):
+            contacts = []
+        get_q = dict(request.GET.items())
+        # pageはtemplateでくっつけてる
+        if "page" in get_q: del get_q["page"]
+        for key, val in get_q.items():
+            if isinstance(val, unicode): get_q[key] = val.encode("utf-8")
+        nextparams = urllib.urlencode(get_q)
+        number = u"%d件" % len(image_list)
+        return direct_to_template(request, "list.html", {"contacts":contacts,
+                                                          "number":number,
+                                                          "nextparams":nextparams,
+                                                          "tags":all_tags
+                                                          })
+
 @login_required
 def admin(request):
     ''' 管理画面 '''
@@ -67,12 +100,13 @@ def admin(request):
     # 一覧を表示
     else:
         keyword = request.GET.get("keyword","")
+        
         if request.GET.get("tags"):
             tags = Tag.objects.filter(name__in=filter(lambda s:s!="",request.GET["tags"].split(",")))
-            query = Q(description__contains=keyword)
-            for tag in tags:
-                query = query and Q(tag=tag)
-                image_list = Image.objects.filter(query).order_by("-created").distinct()
+            query = Image.objects.filter(description__contains=keyword)
+            for tag in tags: # and search
+                query = query.filter(tag=tag)
+            image_list = query.order_by("-created").distinct()
         else:
             image_list = Image.objects.filter(description__contains=keyword).order_by("-created").distinct()
         
@@ -219,8 +253,8 @@ def save_image(image_name, image_data, tags, description="", permlink="", meta="
     image_obj.save()
     
     # OCR処理を裏で
-    t = threading.Thread(target=partial(process, image_path, image_obj.id))
-    t.start()
+    #t = threading.Thread(target=partial(process, image_path, image_obj.id))
+    #t.start()
     
     return image_url
 
